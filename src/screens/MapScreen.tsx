@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { OsmMapView } from '../components/OsmMapView';
 import { useTrip } from '../context/TripContext';
 import { fetchPlacesNear } from '../services/overpass';
 import { fetchRoute, RouteResult } from '../services/routing';
 import { Place } from '../types';
-import { colors } from '../theme/colors';
+import { colors, gradients } from '../theme/colors';
 
 export function MapScreen() {
   const { trip } = useTrip();
@@ -83,13 +84,13 @@ export function MapScreen() {
       )}
 
       {trip.stops.length === 0 && (
-        <View style={styles.overlay}>
+        <LinearGradient colors={gradients.bgOcean} style={styles.overlay}>
           <Text style={styles.overlayEmoji}>🗺️</Text>
           <Text style={styles.overlayText}>
             Lägg till delmål under fliken "Resa" för att se kartan med rutt och
             platser! 🌈
           </Text>
-        </View>
+        </LinearGradient>
       )}
     </View>
   );
@@ -144,7 +145,6 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFill,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,246,233,0.92)',
     paddingHorizontal: 32,
   },
   overlayEmoji: {

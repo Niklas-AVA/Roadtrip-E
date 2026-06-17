@@ -8,6 +8,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTrip } from '../context/TripContext';
 import { Card } from '../components/Card';
 import { GradientHeader } from '../components/GradientHeader';
@@ -84,7 +85,7 @@ export function TripScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <LinearGradient colors={gradients.bgSunset} style={styles.container}>
       <GradientHeader
         emoji="🚐"
         title={trip.name}
@@ -197,14 +198,13 @@ export function TripScreen() {
           </>
         )}
       />
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   searchCard: {
     paddingBottom: 12,
@@ -229,14 +229,16 @@ const styles = StyleSheet.create({
   },
   searchButton: {
     backgroundColor: colors.primary,
-    borderRadius: 14,
-    paddingVertical: 12,
+    borderRadius: 16,
+    paddingVertical: 18,
     alignItems: 'center',
+    minHeight: 56,
+    justifyContent: 'center',
   },
   searchButtonText: {
     color: '#fff',
     fontWeight: '800',
-    fontSize: 15,
+    fontSize: 17,
   },
   error: {
     color: colors.danger,
@@ -291,9 +293,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   stopOrder: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
@@ -317,35 +319,40 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   dayButton: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: colors.background,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.surface,
     borderWidth: 2,
     borderColor: colors.accent,
     alignItems: 'center',
     justifyContent: 'center',
   },
   dayButtonText: {
-    fontSize: 17,
+    fontSize: 22,
     fontWeight: '800',
     color: colors.primary,
   },
   daysText: {
-    marginHorizontal: 12,
-    fontSize: 13,
+    marginHorizontal: 14,
+    fontSize: 14,
     fontWeight: '700',
     color: colors.text,
   },
   actions: {
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
     marginLeft: 8,
   },
   actionButton: {
-    padding: 4,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: `${colors.secondary}14`,
   },
   actionIcon: {
-    fontSize: 17,
+    fontSize: 19,
   },
 });

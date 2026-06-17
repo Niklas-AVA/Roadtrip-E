@@ -24,6 +24,9 @@ export const gradients = {
   groovy: ['#7C4DFF', '#FF5DA2'] as const,
   ocean: ['#1FB6D6', '#7C4DFF'] as const,
   jungle: ['#1FAF8E', '#FFC93C'] as const,
+  bgSunset: ['#FFD3EA', '#FFE2B8', '#FFF3B8'] as const,
+  bgJungle: ['#C7F3E0', '#FFE9A0'] as const,
+  bgOcean: ['#CDF1F8', '#E3D6FF'] as const,
 };
 
 export const categoryColors: Record<string, string> = {
