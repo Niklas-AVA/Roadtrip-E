@@ -1,21 +1,29 @@
 export const colors = {
-  background: '#FAFAFA',
+  background: '#FFF6E9', // warm sunny cream
   surface: '#FFFFFF',
-  text: '#1F2933',
-  textMuted: '#6B7280',
-  border: '#E5E7EB',
+  text: '#3B2A52', // deep psychedelic purple, readable on cream
+  textMuted: '#8A78A8',
+  border: '#FFE2B8',
 
-  primary: '#2563EB', // blue - actions, beaches
-  accent: '#F97316', // orange - stellplatz
+  primary: '#FF5DA2', // hot pink - main actions
+  secondary: '#7C4DFF', // groovy purple
+  accent: '#FFC93C', // sunflower yellow
 
-  camping: '#16A34A', // green
-  stellplatz: '#F97316', // orange
-  beach: '#0EA5E9', // blue
-  attraction: '#9333EA', // purple
+  camping: '#1FAF8E', // jungle turquoise
+  stellplatz: '#FF7A3D', // sunset orange
+  beach: '#1FB6D6', // ocean teal
+  attraction: '#A560E8', // psychedelic violet
 
-  success: '#22C55E',
-  warning: '#FACC15',
-  danger: '#EF4444',
+  success: '#1FAF8E',
+  warning: '#FFC93C',
+  danger: '#FF5470',
+};
+
+export const gradients = {
+  sunset: ['#FF5DA2', '#FF7A3D', '#FFC93C'] as const,
+  groovy: ['#7C4DFF', '#FF5DA2'] as const,
+  ocean: ['#1FB6D6', '#7C4DFF'] as const,
+  jungle: ['#1FAF8E', '#FFC93C'] as const,
 };
 
 export const categoryColors: Record<string, string> = {

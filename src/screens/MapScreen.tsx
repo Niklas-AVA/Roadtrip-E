@@ -117,7 +117,7 @@ export function MapScreen() {
           <Polyline
             coordinates={route.coordinates}
             strokeColor={colors.primary}
-            strokeWidth={4}
+            strokeWidth={5}
           />
         )}
       </MapView>
@@ -140,9 +140,10 @@ export function MapScreen() {
 
       {trip.stops.length === 0 && (
         <View style={styles.overlay}>
+          <Text style={styles.overlayEmoji}>🗺️</Text>
           <Text style={styles.overlayText}>
             Lägg till delmål under fliken "Resa" för att se kartan med rutt och
-            platser.
+            platser! 🌈
           </Text>
         </View>
       )}
@@ -159,15 +160,15 @@ const styles = StyleSheet.create({
   },
   poiMarker: {
     backgroundColor: colors.surface,
-    borderRadius: 16,
-    borderWidth: 2,
-    width: 32,
-    height: 32,
+    borderRadius: 18,
+    borderWidth: 3,
+    width: 36,
+    height: 36,
     alignItems: 'center',
     justifyContent: 'center',
   },
   poiIcon: {
-    fontSize: 16,
+    fontSize: 17,
   },
   loadingBadge: {
     position: 'absolute',
@@ -177,41 +178,55 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.surface,
     borderRadius: 999,
+    borderWidth: 2,
+    borderColor: colors.accent,
     paddingVertical: 8,
     paddingHorizontal: 16,
     gap: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowColor: colors.secondary,
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
     elevation: 3,
   },
   loadingText: {
-    color: colors.textMuted,
+    color: colors.text,
     fontSize: 13,
+    fontWeight: '600',
   },
   routeInfo: {
     position: 'absolute',
     bottom: 16,
     alignSelf: 'center',
-    backgroundColor: colors.primary,
+    backgroundColor: colors.secondary,
     borderRadius: 999,
-    paddingVertical: 10,
-    paddingHorizontal: 18,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    shadowColor: colors.secondary,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   routeInfoText: {
     color: '#fff',
-    fontWeight: '700',
+    fontWeight: '800',
+    fontSize: 14,
   },
   overlay: {
     ...StyleSheet.absoluteFill,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.85)',
+    backgroundColor: 'rgba(255,246,233,0.92)',
     paddingHorizontal: 32,
+  },
+  overlayEmoji: {
+    fontSize: 40,
+    marginBottom: 12,
   },
   overlayText: {
     textAlign: 'center',
-    color: colors.textMuted,
-    lineHeight: 20,
+    color: colors.text,
+    lineHeight: 22,
+    fontSize: 15,
+    fontWeight: '600',
   },
 });

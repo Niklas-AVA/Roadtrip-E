@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { FACILITY_LABELS, Place } from '../types';
-import { categoryColors } from '../theme/colors';
+import { categoryColors, colors } from '../theme/colors';
 import { Card } from './Card';
 import { CategoryBadge } from './CategoryBadge';
 
@@ -33,23 +33,23 @@ export function PlaceCard({ place, onPress }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    borderLeftWidth: 5,
+    borderLeftWidth: 6,
   },
   name: {
-    fontSize: 16,
-    fontWeight: '700',
-    marginTop: 6,
-    color: '#1F2933',
+    fontSize: 17,
+    fontWeight: '800',
+    marginTop: 8,
+    color: colors.text,
   },
   facilities: {
     marginTop: 4,
     fontSize: 12,
-    color: '#6B7280',
+    color: colors.textMuted,
   },
   noFacilities: {
     marginTop: 4,
     fontSize: 12,
-    color: '#9CA3AF',
+    color: colors.textMuted,
     fontStyle: 'italic',
   },
 });
