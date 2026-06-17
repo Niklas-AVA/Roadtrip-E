@@ -1,18 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import MapView, { Marker, Polyline, UrlTile } from 'react-native-maps';
+import { OsmMapView } from '../components/OsmMapView';
 import { useTrip } from '../context/TripContext';
 import { fetchPlacesNear } from '../services/overpass';
 import { fetchRoute, RouteResult } from '../services/routing';
 import { Place } from '../types';
-import { categoryColors, categoryIcons, colors } from '../theme/colors';
-
-const EUROPE_REGION = {
-  latitude: 48.5,
-  longitude: 9.5,
-  latitudeDelta: 20,
-  longitudeDelta: 20,
-};
+import { colors } from '../theme/colors';
 
 export function MapScreen() {
   const { trip } = useTrip();
@@ -65,62 +58,13 @@ export function MapScreen() {
     };
   }, [trip.stops]);
 
-  const initialRegion = useMemo(() => {
-    if (trip.stops.length === 0) return EUROPE_REGION;
-    const first = trip.stops[0];
-    return {
-      latitude: first.lat,
-      longitude: first.lon,
-      latitudeDelta: 4,
-      longitudeDelta: 4,
-    };
-  }, [trip.stops]);
-
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} initialRegion={initialRegion}>
-        <UrlTile
-          urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-          maximumZ={19}
-          flipY={false}
-        />
-
-        {trip.stops.map((stop, index) => (
-          <Marker
-            key={stop.id}
-            coordinate={{ latitude: stop.lat, longitude: stop.lon }}
-            title={`${index + 1}. ${stop.name.split(',')[0]}`}
-            description={`${stop.days} ${stop.days === 1 ? 'dag' : 'dagar'}`}
-            pinColor={colors.primary}
-          />
-        ))}
-
-        {places.map((place) => (
-          <Marker
-            key={place.id}
-            coordinate={{ latitude: place.lat, longitude: place.lon }}
-            title={place.name}
-            pinColor={categoryColors[place.category]}
-          >
-            <View
-              style={[
-                styles.poiMarker,
-                { borderColor: categoryColors[place.category] },
-              ]}
-            >
-              <Text style={styles.poiIcon}>{categoryIcons[place.category]}</Text>
-            </View>
-          </Marker>
-        ))}
-
-        {route && (
-          <Polyline
-            coordinates={route.coordinates}
-            strokeColor={colors.primary}
-            strokeWidth={5}
-          />
-        )}
-      </MapView>
+      <OsmMapView
+        stops={trip.stops}
+        places={places}
+        routeCoordinates={route?.coordinates ?? null}
+      />
 
       {loading && (
         <View style={styles.loadingBadge}>
@@ -154,21 +98,6 @@ export function MapScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  map: {
-    flex: 1,
-  },
-  poiMarker: {
-    backgroundColor: colors.surface,
-    borderRadius: 18,
-    borderWidth: 3,
-    width: 36,
-    height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  poiIcon: {
-    fontSize: 17,
   },
   loadingBadge: {
     position: 'absolute',
