@@ -1,18 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import MapView, { Marker, Polyline, UrlTile } from 'react-native-maps';
+import { LinearGradient } from 'expo-linear-gradient';
+import { OsmMapView } from '../components/OsmMapView';
 import { useTrip } from '../context/TripContext';
 import { fetchPlacesNear } from '../services/overpass';
 import { fetchRoute, RouteResult } from '../services/routing';
 import { Place } from '../types';
-import { categoryColors, categoryIcons, colors } from '../theme/colors';
-
-const EUROPE_REGION = {
-  latitude: 48.5,
-  longitude: 9.5,
-  latitudeDelta: 20,
-  longitudeDelta: 20,
-};
+import { colors, gradients } from '../theme/colors';
 
 export function MapScreen() {
   const { trip } = useTrip();
@@ -65,62 +59,13 @@ export function MapScreen() {
     };
   }, [trip.stops]);
 
-  const initialRegion = useMemo(() => {
-    if (trip.stops.length === 0) return EUROPE_REGION;
-    const first = trip.stops[0];
-    return {
-      latitude: first.lat,
-      longitude: first.lon,
-      latitudeDelta: 4,
-      longitudeDelta: 4,
-    };
-  }, [trip.stops]);
-
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} initialRegion={initialRegion}>
-        <UrlTile
-          urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-          maximumZ={19}
-          flipY={false}
-        />
-
-        {trip.stops.map((stop, index) => (
-          <Marker
-            key={stop.id}
-            coordinate={{ latitude: stop.lat, longitude: stop.lon }}
-            title={`${index + 1}. ${stop.name.split(',')[0]}`}
-            description={`${stop.days} ${stop.days === 1 ? 'dag' : 'dagar'}`}
-            pinColor={colors.primary}
-          />
-        ))}
-
-        {places.map((place) => (
-          <Marker
-            key={place.id}
-            coordinate={{ latitude: place.lat, longitude: place.lon }}
-            title={place.name}
-            pinColor={categoryColors[place.category]}
-          >
-            <View
-              style={[
-                styles.poiMarker,
-                { borderColor: categoryColors[place.category] },
-              ]}
-            >
-              <Text style={styles.poiIcon}>{categoryIcons[place.category]}</Text>
-            </View>
-          </Marker>
-        ))}
-
-        {route && (
-          <Polyline
-            coordinates={route.coordinates}
-            strokeColor={colors.primary}
-            strokeWidth={4}
-          />
-        )}
-      </MapView>
+      <OsmMapView
+        stops={trip.stops}
+        places={places}
+        routeCoordinates={route?.coordinates ?? null}
+      />
 
       {loading && (
         <View style={styles.loadingBadge}>
@@ -139,12 +84,13 @@ export function MapScreen() {
       )}
 
       {trip.stops.length === 0 && (
-        <View style={styles.overlay}>
+        <LinearGradient colors={gradients.bgOcean} style={styles.overlay}>
+          <Text style={styles.overlayEmoji}>🗺️</Text>
           <Text style={styles.overlayText}>
             Lägg till delmål under fliken "Resa" för att se kartan med rutt och
-            platser.
+            platser! 🌈
           </Text>
-        </View>
+        </LinearGradient>
       )}
     </View>
   );
@@ -154,21 +100,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  map: {
-    flex: 1,
-  },
-  poiMarker: {
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    borderWidth: 2,
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  poiIcon: {
-    fontSize: 16,
-  },
   loadingBadge: {
     position: 'absolute',
     top: 16,
@@ -177,41 +108,54 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.surface,
     borderRadius: 999,
+    borderWidth: 2,
+    borderColor: colors.accent,
     paddingVertical: 8,
     paddingHorizontal: 16,
     gap: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowColor: colors.secondary,
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
     elevation: 3,
   },
   loadingText: {
-    color: colors.textMuted,
+    color: colors.text,
     fontSize: 13,
+    fontWeight: '600',
   },
   routeInfo: {
     position: 'absolute',
     bottom: 16,
     alignSelf: 'center',
-    backgroundColor: colors.primary,
+    backgroundColor: colors.secondary,
     borderRadius: 999,
-    paddingVertical: 10,
-    paddingHorizontal: 18,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    shadowColor: colors.secondary,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   routeInfoText: {
     color: '#fff',
-    fontWeight: '700',
+    fontWeight: '800',
+    fontSize: 14,
   },
   overlay: {
     ...StyleSheet.absoluteFill,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.85)',
     paddingHorizontal: 32,
+  },
+  overlayEmoji: {
+    fontSize: 40,
+    marginBottom: 12,
   },
   overlayText: {
     textAlign: 'center',
-    color: colors.textMuted,
-    lineHeight: 20,
+    color: colors.text,
+    lineHeight: 22,
+    fontSize: 15,
+    fontWeight: '600',
   },
 });

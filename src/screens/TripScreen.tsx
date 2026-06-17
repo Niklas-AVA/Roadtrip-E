@@ -8,9 +8,11 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTrip } from '../context/TripContext';
 import { Card } from '../components/Card';
-import { colors } from '../theme/colors';
+import { GradientHeader } from '../components/GradientHeader';
+import { colors, gradients } from '../theme/colors';
 import { geocodePlace, GeocodeResult } from '../services/geocoding';
 import { fetchLegs, RouteLeg } from '../services/routing';
 
@@ -68,7 +70,7 @@ export function TripScreen() {
     try {
       const found = await geocodePlace(query);
       setResults(found);
-      if (found.length === 0) setError('Inga platser hittades.');
+      if (found.length === 0) setError('Inga platser hittades. Testa ett annat namn! 🔍');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Något gick fel.');
     } finally {
@@ -83,18 +85,20 @@ export function TripScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>{trip.name}</Text>
-        <Text style={styles.subtitle}>
-          {trip.stops.length} delmål · {totalDays} {totalDays === 1 ? 'dag' : 'dagar'}{' '}
-          totalt
-          {legs.length > 0 && ` · ${formatDistance(totalDistanceMeters)} totalt`}
-          {legsLoading && ' · beräknar sträcka…'}
-        </Text>
-      </View>
+    <LinearGradient colors={gradients.bgSunset} style={styles.container}>
+      <GradientHeader
+        emoji="🚐"
+        title={trip.name}
+        subtitle={`${trip.stops.length} delmål · ${totalDays} ${
+          totalDays === 1 ? 'dag' : 'dagar'
+        } totalt${legs.length > 0 ? ` · ${formatDistance(totalDistanceMeters)}` : ''}${
+          legsLoading ? ' · beräknar sträcka…' : ''
+        }`}
+        colors={gradients.sunset}
+      />
 
       <Card style={styles.searchCard}>
+        <Text style={styles.searchLabel}>Vart vill du åka? ✨</Text>
         <TextInput
           style={styles.input}
           placeholder="Sök stad eller plats, t.ex. Toscana"
@@ -108,7 +112,7 @@ export function TripScreen() {
           {searching ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.searchButtonText}>Sök</Text>
+            <Text style={styles.searchButtonText}>🔍 Sök</Text>
           )}
         </Pressable>
 
@@ -133,7 +137,7 @@ export function TripScreen() {
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <Text style={styles.empty}>
-            Inga delmål än. Sök efter en plats ovan för att börja planera din
+            🌈 Inga delmål än. Sök efter en plats ovan för att börja planera din
             roadtrip!
           </Text>
         }
@@ -179,13 +183,13 @@ export function TripScreen() {
                 </View>
               </View>
               <View style={styles.actions}>
-                <Pressable onPress={() => moveStop(item.id, 'up')}>
+                <Pressable style={styles.actionButton} onPress={() => moveStop(item.id, 'up')}>
                   <Text style={styles.actionIcon}>⬆️</Text>
                 </Pressable>
-                <Pressable onPress={() => moveStop(item.id, 'down')}>
+                <Pressable style={styles.actionButton} onPress={() => moveStop(item.id, 'down')}>
                   <Text style={styles.actionIcon}>⬇️</Text>
                 </Pressable>
-                <Pressable onPress={() => removeStop(item.id)}>
+                <Pressable style={styles.actionButton} onPress={() => removeStop(item.id)}>
                   <Text style={styles.actionIcon}>🗑️</Text>
                 </Pressable>
               </View>
@@ -194,61 +198,56 @@ export function TripScreen() {
           </>
         )}
       />
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 4,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: 13,
-    color: colors.textMuted,
-    marginTop: 2,
   },
   searchCard: {
-    paddingBottom: 10,
+    paddingBottom: 12,
+    marginTop: -14,
+  },
+  searchLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.secondary,
+    marginBottom: 8,
   },
   input: {
-    borderWidth: 1.5,
+    borderWidth: 2,
     borderColor: colors.border,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     fontSize: 15,
     color: colors.text,
-    marginBottom: 8,
+    marginBottom: 10,
+    backgroundColor: colors.background,
   },
   searchButton: {
     backgroundColor: colors.primary,
-    borderRadius: 12,
-    paddingVertical: 10,
+    borderRadius: 16,
+    paddingVertical: 18,
     alignItems: 'center',
+    minHeight: 56,
+    justifyContent: 'center',
   },
   searchButtonText: {
     color: '#fff',
-    fontWeight: '700',
-    fontSize: 15,
+    fontWeight: '800',
+    fontSize: 17,
   },
   error: {
     color: colors.danger,
     marginTop: 8,
     fontSize: 13,
+    fontWeight: '600',
   },
   resultRow: {
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderTopWidth: 1,
     borderTopColor: colors.border,
     marginTop: 8,
@@ -256,6 +255,7 @@ const styles = StyleSheet.create({
   resultText: {
     color: colors.text,
     fontSize: 14,
+    fontWeight: '600',
   },
   listContent: {
     paddingBottom: 24,
@@ -265,7 +265,9 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     marginTop: 32,
     marginHorizontal: 32,
-    lineHeight: 20,
+    lineHeight: 22,
+    fontSize: 15,
+    fontWeight: '600',
   },
   stopCard: {},
   legRow: {
@@ -276,13 +278,14 @@ const styles = StyleSheet.create({
   },
   legLine: {
     flex: 1,
-    height: 1,
+    height: 2,
     backgroundColor: colors.border,
+    borderRadius: 1,
   },
   legText: {
     fontSize: 12,
-    fontWeight: '600',
-    color: colors.primary,
+    fontWeight: '700',
+    color: colors.secondary,
     marginHorizontal: 8,
   },
   stopRow: {
@@ -290,13 +293,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   stopOrder: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 10,
+    marginRight: 12,
   },
   stopOrderText: {
     color: '#fff',
@@ -306,34 +309,34 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   stopName: {
-    fontSize: 15,
-    fontWeight: '700',
+    fontSize: 16,
+    fontWeight: '800',
     color: colors.text,
   },
   daysRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 6,
+    marginTop: 8,
   },
   dayButton: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: colors.background,
-    borderWidth: 1.5,
-    borderColor: colors.border,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.surface,
+    borderWidth: 2,
+    borderColor: colors.accent,
     alignItems: 'center',
     justifyContent: 'center',
   },
   dayButtonText: {
-    fontSize: 16,
+    fontSize: 22,
     fontWeight: '800',
     color: colors.primary,
   },
   daysText: {
-    marginHorizontal: 10,
-    fontSize: 13,
-    fontWeight: '600',
+    marginHorizontal: 14,
+    fontSize: 14,
+    fontWeight: '700',
     color: colors.text,
   },
   actions: {
@@ -341,7 +344,15 @@ const styles = StyleSheet.create({
     gap: 6,
     marginLeft: 8,
   },
+  actionButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: `${colors.secondary}14`,
+  },
   actionIcon: {
-    fontSize: 16,
+    fontSize: 19,
   },
 });

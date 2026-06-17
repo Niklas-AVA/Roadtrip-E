@@ -10,14 +10,16 @@ import {
   Text,
   View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTrip } from '../context/TripContext';
 import { fetchPlacesNear } from '../services/overpass';
 import { FACILITY_LABELS, FacilityFlags, Place, PlaceCategory } from '../types';
 import { Card } from '../components/Card';
 import { CategoryBadge } from '../components/CategoryBadge';
 import { FacilityCheckbox } from '../components/FacilityCheckbox';
+import { GradientHeader } from '../components/GradientHeader';
 import { PlaceCard } from '../components/PlaceCard';
-import { categoryColors, categoryLabels, colors } from '../theme/colors';
+import { categoryColors, categoryLabels, colors, gradients } from '../theme/colors';
 
 const CATEGORIES: PlaceCategory[] = ['camping', 'stellplatz', 'beach', 'attraction'];
 const FACILITY_KEYS = Object.keys(FACILITY_LABELS) as (keyof FacilityFlags)[];
@@ -99,17 +101,29 @@ export function PlacesScreen() {
 
   if (trip.stops.length === 0) {
     return (
-      <View style={styles.container}>
+      <LinearGradient colors={gradients.bgJungle} style={styles.container}>
+        <GradientHeader
+          emoji="🌻"
+          title="Platser"
+          subtitle="Campingar, ställplatser, stränder & sevärdheter"
+          colors={gradients.jungle}
+        />
         <Text style={styles.empty}>
-          Lägg till delmål under fliken "Resa" för att se ställplatser,
+          🚐 Lägg till delmål under fliken "Resa" för att se ställplatser,
           campingar, stränder och sevärdheter i närheten.
         </Text>
-      </View>
+      </LinearGradient>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <LinearGradient colors={gradients.bgJungle} style={styles.container}>
+      <GradientHeader
+        emoji="🌻"
+        title="Platser"
+        subtitle={`Nära ${selectedStop?.name.split(',')[0] ?? 'ditt delmål'}`}
+        colors={gradients.jungle}
+      />
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -263,7 +277,7 @@ export function PlacesScreen() {
                     )
                   }
                 >
-                  <Text style={styles.osmButtonText}>Öppna i OpenStreetMap</Text>
+                  <Text style={styles.osmButtonText}>🗺️ Öppna i OpenStreetMap</Text>
                 </Pressable>
 
                 <Pressable
@@ -277,14 +291,13 @@ export function PlacesScreen() {
           </View>
         </View>
       </Modal>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   stopSelector: {
     flexGrow: 0,
@@ -295,11 +308,11 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   stopChip: {
-    paddingVertical: 8,
-    paddingHorizontal: 14,
+    paddingVertical: 13,
+    paddingHorizontal: 20,
     borderRadius: 999,
     backgroundColor: colors.surface,
-    borderWidth: 1.5,
+    borderWidth: 2,
     borderColor: colors.border,
     marginRight: 4,
   },
@@ -308,8 +321,8 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   stopChipText: {
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '700',
     color: colors.text,
     maxWidth: 140,
   },
@@ -325,15 +338,15 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
   },
   categoryChip: {
-    paddingVertical: 6,
-    paddingHorizontal: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     borderRadius: 999,
-    borderWidth: 1.5,
+    borderWidth: 2,
     marginRight: 4,
   },
   categoryChipText: {
-    fontWeight: '700',
-    fontSize: 13,
+    fontWeight: '800',
+    fontSize: 14,
   },
   facilityRow: {
     flexDirection: 'row',
@@ -359,20 +372,22 @@ const styles = StyleSheet.create({
   },
   empty: {
     textAlign: 'center',
-    color: colors.textMuted,
+    color: colors.text,
     marginTop: 32,
     marginHorizontal: 32,
-    lineHeight: 20,
+    lineHeight: 22,
+    fontSize: 15,
+    fontWeight: '600',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'rgba(59,42,82,0.5)',
     justifyContent: 'flex-end',
   },
   modalContent: {
     backgroundColor: colors.surface,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
     padding: 20,
     paddingBottom: 32,
   },
@@ -418,22 +433,28 @@ const styles = StyleSheet.create({
   },
   osmButton: {
     backgroundColor: colors.primary,
-    borderRadius: 12,
-    paddingVertical: 12,
+    borderRadius: 18,
+    paddingVertical: 18,
     alignItems: 'center',
     marginTop: 16,
+    minHeight: 56,
+    justifyContent: 'center',
   },
   osmButtonText: {
     color: '#fff',
-    fontWeight: '700',
+    fontWeight: '800',
+    fontSize: 16,
   },
   closeButton: {
-    paddingVertical: 12,
+    paddingVertical: 16,
     alignItems: 'center',
     marginTop: 8,
+    minHeight: 48,
+    justifyContent: 'center',
   },
   closeButtonText: {
     color: colors.textMuted,
-    fontWeight: '600',
+    fontWeight: '700',
+    fontSize: 15,
   },
 });
