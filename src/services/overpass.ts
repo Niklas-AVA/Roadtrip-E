@@ -1,6 +1,12 @@
 import { FacilityFlags, Place, PlaceCategory } from '../types';
 
-const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
+const OVERPASS_URLS = [
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+  'https://overpass.private.coffee/api/interpreter',
+];
+
+const REQUEST_TIMEOUT_MS = 20000;
 
 interface OverpassElement {
   id: number;
@@ -49,25 +55,7 @@ function parseFacilities(tags: Record<string, string>): FacilityFlags {
   };
 }
 
-export async function fetchPlacesNear(
-  lat: number,
-  lon: number,
-  radiusMeters = 15000
-): Promise<Place[]> {
-  const query = buildQuery(lat, lon, radiusMeters);
-
-  const response = await fetch(OVERPASS_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `data=${encodeURIComponent(query)}`,
-  });
-
-  if (!response.ok) {
-    throw new Error('Kunde inte hämta platser just nu (Overpass).');
-  }
-
-  const data = (await response.json()) as OverpassResponse;
-
+function parsePlaces(data: OverpassResponse): Place[] {
   const places: Place[] = [];
 
   for (const element of data.elements) {
@@ -91,6 +79,51 @@ export async function fetchPlacesNear(
   }
 
   return places;
+}
+
+async function queryOverpass(url: string, query: string): Promise<OverpassResponse> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `data=${encodeURIComponent(query)}`,
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Overpass svarade med fel (${response.status}).`);
+    }
+
+    return (await response.json()) as OverpassResponse;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+export async function fetchPlacesNear(
+  lat: number,
+  lon: number,
+  radiusMeters = 15000
+): Promise<Place[]> {
+  const query = buildQuery(lat, lon, radiusMeters);
+  let lastError: unknown = null;
+
+  for (const url of OVERPASS_URLS) {
+    try {
+      const data = await queryOverpass(url, query);
+      return parsePlaces(data);
+    } catch (e) {
+      lastError = e;
+    }
+  }
+
+  console.warn('Overpass fetch failed on all mirrors', lastError);
+  throw new Error(
+    'Kunde inte hämta platser just nu. Kontrollera internetanslutningen och försök igen.'
+  );
 }
 
 function defaultNameFor(category: PlaceCategory): string {

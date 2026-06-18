@@ -37,6 +37,7 @@ export function PlacesScreen() {
     new Set()
   );
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     if (!selectedStopId && trip.stops.length > 0) {
@@ -69,7 +70,7 @@ export function PlacesScreen() {
     return () => {
       cancelled = true;
     };
-  }, [selectedStop?.id]);
+  }, [selectedStop?.id, retryCount]);
 
   const toggleCategory = (category: PlaceCategory) => {
     setActiveCategories((prev) => {
@@ -208,6 +209,12 @@ export function PlacesScreen() {
       {!!error && !loading && (
         <View style={styles.center}>
           <Text style={styles.errorText}>{error}</Text>
+          <Pressable
+            style={styles.retryButton}
+            onPress={() => setRetryCount((c) => c + 1)}
+          >
+            <Text style={styles.retryButtonText}>🔄 Försök igen</Text>
+          </Pressable>
         </View>
       )}
 
@@ -366,6 +373,23 @@ const styles = StyleSheet.create({
   errorText: {
     color: colors.danger,
     textAlign: 'center',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  retryButton: {
+    backgroundColor: colors.primary,
+    borderRadius: 18,
+    paddingVertical: 16,
+    paddingHorizontal: 28,
+    marginTop: 16,
+    minHeight: 52,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontWeight: '800',
+    fontSize: 15,
   },
   listContent: {
     paddingBottom: 24,
