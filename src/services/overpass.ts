@@ -109,21 +109,18 @@ export async function fetchPlacesNear(
   radiusMeters = 15000
 ): Promise<Place[]> {
   const query = buildQuery(lat, lon, radiusMeters);
-  let lastError: unknown = null;
 
-  for (const url of OVERPASS_URLS) {
-    try {
-      const data = await queryOverpass(url, query);
-      return parsePlaces(data);
-    } catch (e) {
-      lastError = e;
-    }
+  try {
+    const data = await Promise.any(
+      OVERPASS_URLS.map((url) => queryOverpass(url, query))
+    );
+    return parsePlaces(data);
+  } catch (e) {
+    console.warn('Overpass fetch failed on all mirrors', e);
+    throw new Error(
+      'Kunde inte hämta platser just nu. Kontrollera internetanslutningen och försök igen.'
+    );
   }
-
-  console.warn('Overpass fetch failed on all mirrors', lastError);
-  throw new Error(
-    'Kunde inte hämta platser just nu. Kontrollera internetanslutningen och försök igen.'
-  );
 }
 
 function defaultNameFor(category: PlaceCategory): string {
